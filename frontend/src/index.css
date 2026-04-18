@@ -1,0 +1,105 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #213547;
+  background-color: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  font-weight: 500;
+  color: #E6004C;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #FF2A6D;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  border-color: #E6004C;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.gradient-brand {
+  background: linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #FF6B8A 0%, #FF9A9E 100%);
+}
+
+.gradient-button {
+  background: linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%);
+  color: white;
+}
+
+.gradient-button:hover {
+  background: linear-gradient(135deg, #D00044 0%, #E82560 100%);
+}
+
+.gradient-bg {
+  background: linear-gradient(180deg, #FFF5F8 0%, #FFE8EF 100%);
+}
+
+.upload-zone {
+  border: 2px dashed #E6004C;
+  background: rgba(230, 0, 76, 0.03);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+  background: rgba(230, 0, 76, 0.08);
+  box-shadow: 0 4px 12px rgba(230, 0, 76, 0.1);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

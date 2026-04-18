@@ -1,0 +1,96 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-test:
+    name: 后端测试
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: yida_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装后端依赖
+        working-directory: ./backend
+        run: npm ci
+
+      - name: 生成 Prisma 客户端
+        working-directory: ./backend
+        run: npx prisma generate
+
+      - name: 运行数据库迁移
+        working-directory: ./backend
+        run: npx prisma db push
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/yida_test
+
+      - name: TypeScript 编译检查
+        working-directory: ./backend
+        run: npx tsc --noEmit
+
+      - name: 运行集成测试
+        working-directory: ./backend
+        run: npx ts-node integration-test.ts
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/yida_test
+          JWT_SECRET: test-secret
+          FASHN_API_URL: http://test.api
+
+  frontend-build:
+    name: 前端构建
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装前端依赖
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: TypeScript 编译检查
+        working-directory: ./frontend
+        run: npx tsc --noEmit
+
+      - name: 构建前端
+        working-directory: ./frontend
+        run: npm run build
+
+  deploy:
+    name: 部署
+    needs: [backend-test, frontend-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 通知部署完成
+        run: echo "所有测试通过，可以安全部署到生产环境"

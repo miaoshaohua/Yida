@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI虚拟试衣间 - 页面原型设计</title>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .prototype-card {
+            border: 2px dashed #ccc;
+            margin-bottom: 40px;
+        }
+        .prototype-label {
+            background: linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%);
+            color: white;
+            padding: 8px 16px;
+            font-weight: bold;
+            border-bottom: 2px dashed #ccc;
+        }
+        .gradient-brand {
+            background: linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%);
+        }
+        .gradient-accent {
+            background: linear-gradient(135deg, #FF6B8A 0%, #FF9A9E 100%);
+        }
+        .gradient-button {
+            background: linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%);
+        }
+        .gradient-button:hover {
+            background: linear-gradient(135deg, #D00044 0%, #E82560 100%);
+        }
+        .gradient-bg {
+            background: linear-gradient(180deg, #FFF5F8 0%, #FFE8EF 100%);
+        }
+        .photo-selected {
+            border: 4px solid #E6004C;
+            box-shadow: 0 0 0 2px white, 0 0 20px rgba(230, 0, 76, 0.3);
+        }
+        .upload-zone {
+            border: 2px dashed #E6004C;
+            background: rgba(230, 0, 76, 0.03);
+        }
+        .upload-zone:hover {
+            background: rgba(230, 0, 76, 0.08);
+        }
+        .sidebar-bg {
+            background: #001529;
+        }
+        .ant-blue {
+            background: #1890FF;
+        }
+        .bottom-tab {
+            transition: all 0.3s ease;
+        }
+        .bottom-tab.active {
+            color: #E6004C;
+        }
+        .bottom-tab.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%);
+            border-radius: 0 0 3px 3px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
+            AI虚拟试衣间 V1.0
+        </h1>
+        <h2 class="text-xl text-center mb-8 text-gray-600">页面原型设计</h2>
+        <p class="text-center text-sm text-gray-500 mb-8">
+            🎨 设计风格：唯品会风格 - 年轻、时尚、明亮、玫红色渐变 | 完整商业化版本
+        </p>
+
+        <!-- ==================== 前端应用页面 ==================== -->
+        <div class="mb-12">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800 border-b-4 border-rose-500 pb-2">📱 前端应用页面</h3>
+
+            <!-- 用户登录页 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">1. 用户登录页</div>
+                <div class="p-12 gradient-bg">
+                    <div class="max-w-sm mx-auto bg-white rounded-2xl shadow-xl p-8">
+                        <div class="text-center mb-8">
+                            <div class="text-4xl mb-2">👗</div>
+                            <h1 class="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
+                                AI虚拟试衣间
+                            </h1>
+                            <p class="text-gray-500 text-sm mt-1">欢迎回来！请登录以继续</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">手机号</label>
+                                <div class="flex">
+                                    <span class="bg-gray-100 border border-gray-300 border-r-0 rounded-l-lg px-3 py-3 text-gray-600">+86</span>
+                                    <input type="tel" placeholder="请输入手机号" class="w-full border border-gray-300 rounded-r-lg px-4 py-3 focus:outline-none focus:border-rose-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">验证码</label>
+                                <div class="flex gap-3">
+                                    <input type="text" placeholder="请输入验证码" class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-rose-500">
+                                    <button class="gradient-button text-white px-4 rounded-lg text-sm whitespace-nowrap">
+                                        获取验证码
+                                    </button>
+                                </div>
+                            </div>
+                            <button class="w-full gradient-button text-white py-3 rounded-lg font-semibold shadow-lg">
+                                登录 / 注册
+                            </button>
+                            <div class="text-center text-sm text-gray-500">
+                                <span>没有账号？</span>
+                                <a href="#" class="text-rose-500">立即注册</a>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-6 border-t text-center text-xs text-gray-400">
+                            <p>登录即表示同意</p>
+                            <p>
+                                <a href="#" class="text-gray-500 underline">用户协议</a>
+                                与
+                                <a href="#" class="text-gray-500 underline">隐私政策</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 首页 - 简洁版（桌面端） -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">2. 首页 - 简洁版（桌面端）</div>
+                <div class="gradient-bg p-8">
+                    <div class="max-w-xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div class="gradient-brand text-white px-8 py-6 text-center">
+                            <span class="text-4xl">👗</span>
+                            <h1 class="text-2xl font-bold mt-2">AI虚拟试衣间</h1>
+                            <p class="text-white/90 text-sm mt-1">一秒试穿，预见美丽</p>
+                        </div>
+
+                        <div class="px-8 py-8">
+                            <div class="space-y-6">
+                                <div class="upload-zone rounded-2xl p-10 text-center cursor-pointer hover:shadow-md transition-shadow">
+                                    <div class="text-5xl mb-3">👤</div>
+                                    <p class="text-rose-600 text-lg font-bold mb-1">上传人物照片</p>
+                                    <p class="text-gray-500 text-sm">请上传清晰的正面全身照</p>
+                                </div>
+
+                                <div class="upload-zone rounded-2xl p-10 text-center cursor-pointer hover:shadow-md transition-shadow">
+                                    <div class="text-5xl mb-3">👕</div>
+                                    <p class="text-rose-600 text-lg font-bold mb-1">上传衣服图片</p>
+                                    <p class="text-gray-500 text-sm">请上传平铺或模特穿搭图</p>
+                                </div>
+
+                                <div class="flex items-center justify-center gap-8">
+                                    <div class="flex items-center gap-2">
+                                        <input type="radio" id="tops" name="category" checked class="accent-rose-500 w-5 h-5">
+                                        <label for="tops" class="text-gray-700 font-medium">上装</label>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="radio" id="bottoms" name="category" class="accent-rose-500 w-5 h-5">
+                                        <label for="bottoms" class="text-gray-700 font-medium">下装</label>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="radio" id="onepiece" name="category" class="accent-rose-500 w-5 h-5">
+                                        <label for="onepiece" class="text-gray-700 font-medium">连体装</label>
+                                    </div>
+                                </div>
+
+                                <button class="w-full gradient-button text-white py-4 rounded-xl font-bold text-lg shadow-lg">
+                                    ✨ 开始试衣
+                                </button>
+
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-6 h-6 bg-gradient-to-br from-rose-500 to-pink-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-xs font-bold">3</span>
+                                    </div>
+                                    <span class="text-gray-500 text-xs">今日剩余试衣次数</span>
+                                </div>
+
+                                <p class="text-center text-gray-400 text-xs mt-4">
+                                    图片将加密存储30天以便您查看历史，您可随时删除。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 首页 - 移动端布局（简洁版） -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">3. 首页 - 移动端布局（简洁版）</div>
+                <div class="p-4 flex justify-center gradient-bg">
+                    <div class="w-80 border-4 border-gray-800 rounded-3xl overflow-hidden bg-white">
+                        <div class="h-[560px] flex flex-col">
+                            <div class="gradient-brand text-white px-6 py-5 text-center">
+                                <span class="text-3xl">👗</span>
+                                <h1 class="text-xl font-bold mt-1">AI虚拟试衣间</h1>
+                                <p class="text-white/90 text-xs mt-1">一秒试穿，预见美丽</p>
+                            </div>
+
+                            <div class="flex-1 px-5 py-5 overflow-y-auto">
+                                <div class="space-y-4">
+                                    <div class="upload-zone rounded-2xl p-7 text-center cursor-pointer hover:shadow-md transition-shadow">
+                                        <div class="text-4xl mb-2">👤</div>
+                                        <p class="text-rose-600 font-bold mb-1">上传人物照片</p>
+                                        <p class="text-gray-500 text-xs">请上传清晰的正面全身照</p>
+                                    </div>
+
+                                    <div class="upload-zone rounded-2xl p-7 text-center cursor-pointer hover:shadow-md transition-shadow">
+                                        <div class="text-4xl mb-2">👕</div>
+                                        <p class="text-rose-600 font-bold mb-1">上传衣服图片</p>
+                                        <p class="text-gray-500 text-xs">请上传平铺或模特穿搭图</p>
+                                    </div>
+
+                                    <div class="flex items-center justify-center gap-6">
+                                        <div class="flex items-center gap-2">
+                                            <input type="radio" id="tops-m" name="category-m" checked class="accent-rose-500 w-4 h-4">
+                                            <label for="tops-m" class="text-gray-700 text-sm">上装</label>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="radio" id="bottoms-m" name="category-m" class="accent-rose-500 w-4 h-4">
+                                            <label for="bottoms-m" class="text-gray-700 text-sm">下装</label>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <input type="radio" id="onepiece-m" name="category-m" class="accent-rose-500 w-4 h-4">
+                                            <label for="onepiece-m" class="text-gray-700 text-sm">连体装</label>
+                                        </div>
+                                    </div>
+
+                                    <button class="w-full gradient-button text-white py-4 rounded-xl font-bold text-lg shadow-lg">
+                                        ✨ 开始试衣
+                                    </button>
+
+                                    <div class="flex items-center justify-center gap-2">
+                                        <div class="w-5 h-5 bg-gradient-to-br from-rose-500 to-pink-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white text-xs font-bold">3</span>
+                                        </div>
+                                        <span class="text-gray-500 text-xs">今日剩余试衣次数</span>
+                                    </div>
+
+                                    <p class="text-center text-gray-400 text-xs">
+                                        图片将加密存储30天以便您查看历史，您可随时删除。
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="border-t bg-white">
+                                <div class="flex items-center justify-around py-2">
+                                    <button class="bottom-tab active flex flex-col items-center py-2 px-4 relative">
+                                        <span class="text-2xl">🏠</span>
+                                        <span class="text-xs mt-1">首页</span>
+                                    </button>
+                                    <button class="bottom-tab flex flex-col items-center py-2 px-4 relative text-gray-400">
+                                        <span class="text-2xl">📜</span>
+                                        <span class="text-xs mt-1">历史</span>
+                                    </button>
+                                    <button class="bottom-tab flex flex-col items-center py-2 px-4 relative text-gray-400">
+                                        <span class="text-2xl">👤</span>
+                                        <span class="text-xs mt-1">我的</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 加载状态页 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">4. 加载状态页（异步任务+轮询）</div>
+                <div class="p-12 gradient-bg">
+                    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 text-center">
+                        <div class="relative inline-block mb-6">
+                            <div class="animate-spin w-20 h-20 border-4 border-rose-200 border-t-rose-500 rounded-full"></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">正在生成试衣效果...</h3>
+                        <p class="text-gray-500 mb-6 text-sm">首次生成可能较慢，请耐心等待</p>
+                        <div class="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-4 mb-6">
+                            <p class="text-sm text-gray-600 mb-3">💡 通用提示：</p>
+                            <p class="text-rose-600 font-medium" id="loading-tip">正在上传图片...</p>
+                        </div>
+                        <p class="text-gray-500 text-xs">
+                            📌 生成时间较长？可稍后到历史记录中查看
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 结果展示页 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">5. 结果展示页</div>
+                <div class="p-6 gradient-bg">
+                    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div class="gradient-brand text-white text-center py-6">
+                            <h3 class="text-2xl font-bold">✨ 试衣效果生成成功！</h3>
+                        </div>
+                        <div class="p-8">
+                            <div class="bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-6 mb-6 flex justify-center">
+                                <div class="bg-white rounded-xl shadow-lg overflow-hidden w-64">
+                                    <div class="bg-gradient-to-b from-rose-100 to-pink-50 h-80 flex items-center justify-center">
+                                        <span class="text-7xl">👗</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-4 justify-center mb-6">
+                                <button class="gradient-button text-white py-3 px-8 rounded-xl font-semibold flex items-center gap-2 shadow-lg">
+                                    <span>💾</span> 保存图片
+                                </button>
+                                <button class="border-2 border-rose-500 text-rose-500 py-3 px-8 rounded-xl font-semibold flex items-center gap-2 hover:bg-rose-50">
+                                    <span>🔄</span> 重新试衣
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 历史记录页 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">6. 历史记录页（云端）</div>
+                <div class="gradient-bg p-6">
+                    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div class="gradient-brand text-white px-6 py-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">📜</span>
+                                <h2 class="text-xl font-bold">试衣历史</h2>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="bg-white/20 px-4 py-2 rounded-lg text-sm hover:bg-white/30">
+                                    批量删除
+                                </button>
+                                <button class="bg-white/20 px-4 py-2 rounded-lg text-sm hover:bg-white/30">
+                                    🗑️ 清空全部
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+                                    <div class="aspect-[3/4] flex items-center justify-center">
+                                        <span class="text-5xl">👗</span>
+                                    </div>
+                                    <div class="p-3 bg-white">
+                                        <p class="text-xs text-gray-500">2026-04-15</p>
+                                        <input type="checkbox" class="mt-2 accent-rose-500">
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-pink-50 to-red-50 rounded-xl overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+                                    <div class="aspect-[3/4] flex items-center justify-center">
+                                        <span class="text-5xl">👔</span>
+                                    </div>
+                                    <div class="p-3 bg-white">
+                                        <p class="text-xs text-gray-500">2026-04-14</p>
+                                        <input type="checkbox" class="mt-2 accent-rose-500">
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-orange-50 to-rose-50 rounded-xl overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+                                    <div class="aspect-[3/4] flex items-center justify-center">
+                                        <span class="text-5xl">👖</span>
+                                    </div>
+                                    <div class="p-3 bg-white">
+                                        <p class="text-xs text-gray-500">2026-04-13</p>
+                                        <input type="checkbox" class="mt-2 accent-rose-500">
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+                                    <div class="aspect-[3/4] flex items-center justify-center">
+                                        <span class="text-5xl">👗</span>
+                                    </div>
+                                    <div class="p-3 bg-white">
+                                        <p class="text-xs text-gray-500">2026-04-12</p>
+                                        <input type="checkbox" class="mt-2 accent-rose-500">
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-center text-sm text-gray-500 mt-6">云端历史永久保存 · 最近10条缓存到本地</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的页面 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">7. 我的页面</div>
+                <div class="gradient-bg p-6">
+                    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+                        <div class="gradient-brand text-white p-8 text-center">
+                            <div class="w-24 h-24 bg-white/30 rounded-full mx-auto mb-4 flex items-center justify-center text-5xl">
+                                👤
+                            </div>
+                            <h2 class="text-2xl font-bold">用户138****8888</h2>
+                            <p class="opacity-90 text-sm">免费用户 · 剩余2次/天</p>
+                        </div>
+                        <div class="p-6">
+                            <button class="w-full gradient-accent text-white py-4 rounded-xl font-bold mb-6 shadow-lg">
+                                💎 立即升级会员
+                            </button>
+                            <div class="space-y-3">
+                                <a href="#" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100">
+                                    <span class="flex items-center gap-3">
+                                        <span class="text-xl">📊</span> 试衣统计
+                                    </span>
+                                    <span class="text-gray-400">›</span>
+                                </a>
+                                <a href="#" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100">
+                                    <span class="flex items-center gap-3">
+                                        <span class="text-xl">👤</span> 账号安全
+                                    </span>
+                                    <span class="text-gray-400">›</span>
+                                </a>
+                                <a href="#" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100">
+                                    <span class="flex items-center gap-3">
+                                        <span class="text-xl">⚙️</span> 设置
+                                    </span>
+                                    <span class="text-gray-400">›</span>
+                                </a>
+                                <a href="#" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100">
+                                    <span class="flex items-center gap-3">
+                                        <span class="text-xl">❓</span> 帮助与反馈
+                                    </span>
+                                    <span class="text-gray-400">›</span>
+                                </a>
+                                <button class="w-full text-rose-500 py-3 rounded-xl font-medium hover:bg-rose-50">
+                                    退出登录
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 会员升级弹窗 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">8. 会员升级弹窗（沙箱支付）</div>
+                <div class="p-12 gradient-bg">
+                    <div class="max-w-lg mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="gradient-brand text-white text-center py-6">
+                            <h2 class="text-2xl font-bold">💎 升级会员</h2>
+                            <p class="text-white/90 text-sm mt-1">无限次试衣，更有优先生成权</p>
+                        </div>
+                        <div class="p-8">
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="border-2 border-rose-500 bg-rose-50 rounded-xl p-4 text-center cursor-pointer">
+                                    <p class="text-rose-600 font-bold text-lg">月卡</p>
+                                    <p class="text-3xl font-bold text-rose-600">¥9.9</p>
+                                    <p class="text-gray-500 text-sm">/月</p>
+                                    <span class="absolute top-2 right-2 bg-rose-500 text-white text-xs px-2 py-1 rounded">推荐</span>
+                                </div>
+                                <div class="border-2 border-gray-200 rounded-xl p-4 text-center cursor-pointer hover:border-rose-300">
+                                    <p class="text-gray-700 font-bold text-lg">年卡</p>
+                                    <p class="text-3xl font-bold text-gray-700">¥49</p>
+                                    <p class="text-gray-500 text-sm">/年 · 省¥70</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                                <h4 class="font-bold text-gray-700 mb-3">畅用版会员权益：</h4>
+                                <ul class="text-sm text-gray-600 space-y-2">
+                                    <li>✅ 每日无限次试衣</li>
+                                    <li>✅ 优先队列生成（更快）</li>
+                                    <li>✅ 云端历史永久保存</li>
+                                </ul>
+                            </div>
+                            <button class="w-full gradient-button text-white py-4 rounded-xl font-bold text-lg shadow-lg">
+                                立即支付 · 沙箱模式
+                            </button>
+                            <p class="text-center text-xs text-gray-400 mt-4">
+                                <span>支持</span>
+                                <span class="mx-2">📱 微信支付</span>
+                                <span class="mx-2">💳 支付宝</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 后台管理系统页面 ==================== -->
+        <div>
+            <h3 class="text-2xl font-bold mb-6 text-gray-800 border-b-4 border-blue-500 pb-2">🖥️ 后台管理系统页面</h3>
+
+            <!-- 后台登录页 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">9. 后台登录页</div>
+                <div class="p-12 gradient-bg">
+                    <div class="max-w-sm mx-auto bg-white rounded-2xl shadow-xl p-8">
+                        <div class="text-center mb-8">
+                            <div class="text-4xl mb-2">👗</div>
+                            <h1 class="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
+                                AI虚拟试衣间
+                            </h1>
+                            <p class="text-gray-500">管理后台</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">用户名</label>
+                                <input type="text" placeholder="请输入用户名" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-rose-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+                                <input type="password" placeholder="请输入密码" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-rose-500">
+                            </div>
+                            <button class="w-full gradient-button text-white py-3 rounded-lg font-semibold shadow-lg">
+                                登 录
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 后台仪表板 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">10. 仪表板 - 数据概览</div>
+                <div class="flex">
+                    <div class="sidebar-bg w-56 text-white p-4 flex-shrink-0">
+                        <div class="mb-8">
+                            <h2 class="text-lg font-bold">AI虚拟试衣间</h2>
+                        </div>
+                        <nav class="space-y-2">
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-rose-600 to-pink-500 rounded-lg">
+                                <span>📊</span> 数据概览
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>👥</span> 用户管理
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>📷</span> 照片管理
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>📦</span> 订单管理
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>👗</span> 试衣记录
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>⚙️</span> 系统配置
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>📝</span> 操作日志
+                            </a>
+                        </nav>
+                    </div>
+                    <div class="flex-1 p-6 gradient-bg">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-800">数据概览</h2>
+                                <p class="text-gray-500">欢迎回来，管理员</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-gray-600">admin</span>
+                                <button class="text-gray-500">退出</button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-4 mb-6">
+                            <div class="bg-white rounded-xl p-6 shadow-sm">
+                                <div class="text-sm text-gray-500 mb-1">今日试衣次数</div>
+                                <div class="text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">128</div>
+                                <div class="text-sm text-green-500 mt-1">↑ 12%</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 shadow-sm">
+                                <div class="text-sm text-gray-500 mb-1">付费用户数</div>
+                                <div class="text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">56</div>
+                                <div class="text-sm text-green-500 mt-1">↑ 8%</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 shadow-sm">
+                                <div class="text-sm text-gray-500 mb-1">总收入</div>
+                                <div class="text-3xl font-bold bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">¥2,340</div>
+                                <div class="text-sm text-green-500 mt-1">↑ 15%</div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 shadow-sm">
+                                <div class="text-sm text-gray-500 mb-1">API状态</div>
+                                <div class="text-3xl font-bold text-green-500">正常</div>
+                                <div class="text-sm text-gray-500 mt-1">响应时间 2.3s</div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-white rounded-xl p-6 shadow-sm">
+                                <h3 class="font-bold text-gray-800 mb-4">试衣趋势（近7天）</h3>
+                                <div class="h-48 bg-gradient-to-br from-rose-50 to-pink-50 rounded-lg flex items-center justify-center">
+                                    <span class="text-gray-400">📈 图表区域</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-xl p-6 shadow-sm">
+                                <h3 class="font-bold text-gray-800 mb-4">付费趋势（近7天）</h3>
+                                <div class="h-48 bg-gradient-to-br from-pink-50 to-red-50 rounded-lg flex items-center justify-center">
+                                    <span class="text-gray-400">📊 图表区域</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 后台照片管理 -->
+            <div class="prototype-card bg-white rounded-lg overflow-hidden">
+                <div class="prototype-label">11. 后台照片管理页（含30天自动清理）</div>
+                <div class="flex">
+                    <div class="sidebar-bg w-56 text-white p-4 flex-shrink-0">
+                        <div class="mb-8">
+                            <h2 class="text-lg font-bold">AI虚拟试衣间</h2>
+                        </div>
+                        <nav class="space-y-2">
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>📊</span> 数据概览
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>👥</span> 用户管理
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-rose-600 to-pink-500 rounded-lg">
+                                <span>📷</span> 照片管理
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>📦</span> 订单管理
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>👗</span> 试衣记录
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>⚙️</span> 系统配置
+                            </a>
+                            <a href="#" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-700 rounded-lg">
+                                <span>📝</span> 操作日志
+                            </a>
+                        </nav>
+                    </div>
+                    <div class="flex-1 p-6 gradient-bg">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-xl font-bold text-gray-800">照片管理</h2>
+                                <p class="text-gray-500 text-sm">超过30天的图片将自动物理删除</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <select class="border border-gray-300 rounded-lg px-4 py-2 bg-white">
+                                    <option>全部类型</option>
+                                    <option>人物照片</option>
+                                    <option>衣服照片</option>
+                                    <option>结果图</option>
+                                </select>
+                                <input type="text" placeholder="搜索用户ID..." class="border border-gray-300 rounded-lg px-4 py-2 w-64 bg-white">
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">照片ID</th>
+                                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">用户ID</th>
+                                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">类型</th>
+                                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">预览</th>
+                                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">上传时间</th>
+                                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">过期时间</th>
+                                        <th class="px-6 py-4 text-left text-sm font-medium text-gray-500">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-800">photo_001</td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">usr_001</td>
+                                        <td class="px-6 py-4"><span class="px-2 py-1 bg-rose-100 text-rose-600 rounded text-sm">人物</span></td>
+                                        <td class="px-6 py-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-rose-100 to-pink-50 rounded flex items-center justify-center">
+                                                <span>👩</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">2026-04-15</td>
+                                        <td class="px-6 py-4 text-sm text-orange-600">2026-05-15</td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <button class="text-blue-500 hover:underline mr-3">查看</button>
+                                            <button class="text-red-500 hover:underline">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-800">photo_002</td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">usr_001</td>
+                                        <td class="px-6 py-4"><span class="px-2 py-1 bg-pink-100 text-pink-600 rounded text-sm">衣服</span></td>
+                                        <td class="px-6 py-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-pink-100 to-red-50 rounded flex items-center justify-center">
+                                                <span>👗</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">2026-04-15</td>
+                                        <td class="px-6 py-4 text-sm text-orange-600">2026-05-15</td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <button class="text-blue-500 hover:underline mr-3">查看</button>
+                                            <button class="text-red-500 hover:underline">删除</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 text-sm text-gray-800">photo_003</td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">usr_001</td>
+                                        <td class="px-6 py-4"><span class="px-2 py-1 bg-orange-100 text-orange-600 rounded text-sm">结果图</span></td>
+                                        <td class="px-6 py-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-orange-100 to-rose-50 rounded flex items-center justify-center">
+                                                <span>👗</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-600">2026-04-15</td>
+                                        <td class="px-6 py-4 text-sm text-orange-600">2026-05-15</td>
+                                        <td class="px-6 py-4 text-sm">
+                                            <button class="text-blue-500 hover:underline mr-3">查看</button>
+                                            <button class="text-red-500 hover:underline">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <p class="text-sm text-gray-500">共 1,234 条记录 · 自动清理任务每小时运行</p>
+                            <div class="flex items-center gap-2">
+                                <button class="px-3 py-1 border rounded hover:bg-gray-100 bg-white">上一页</button>
+                                <button class="px-3 py-1 gradient-button text-white rounded">1</button>
+                                <button class="px-3 py-1 border rounded hover:bg-gray-100 bg-white">2</button>
+                                <button class="px-3 py-1 border rounded hover:bg-gray-100 bg-white">3</button>
+                                <button class="px-3 py-1 border rounded hover:bg-gray-100 bg-white">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center text-gray-500 mt-12 pb-8">
+            <p>📄 AI虚拟试衣间 V1.0 页面原型设计</p>
+            <p class="text-sm">共 11 个页面原型 · 完整商业化版本</p>
+        </div>
+    </div>
+
+    <script>
+        const swiper = new Swiper('.mySwiper', {
+            direction: 'horizontal',
+            loop: false,
+            effect: 'slide',
+        });
+
+        const loadingTips = [
+            "正在上传图片...",
+            "正在检测人物特征...",
+            "正在分析服装样式...",
+            "正在生成试衣效果...",
+            "即将完成，请稍候..."
+        ];
+
+        let tipIndex = 0;
+        const tipElement = document.getElementById('loading-tip');
+        if (tipElement) {
+            setInterval(() => {
+                tipIndex = (tipIndex + 1) % loadingTips.length;
+                tipElement.textContent = loadingTips[tipIndex];
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

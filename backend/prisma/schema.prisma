@@ -1,0 +1,312 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}
+
+enum TaskStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  TIMEOUT
+}
+
+enum ClothingType {
+  TOP
+  BOTTOM
+  DRESS
+  OUTERWEAR
+  FULL_BODY
+}
+
+enum OperationType {
+  LOGIN
+  LOGOUT
+  UPDATE_PASSWORD
+  CREATE_USER
+  UPDATE_USER
+  DELETE_USER
+  CREATE_ORDER
+  UPDATE_ORDER
+  REFUND_ORDER
+  DELETE_RECORD
+  BATCH_DELETE_RECORDS
+  UPDATE_CONFIG
+  CREATE_ANNOUNCEMENT
+  DELETE_ANNOUNCEMENT
+  CLEANUP_EXPIRED_RECORDS
+  CREATE_ADMIN
+  UPDATE_ADMIN
+  DELETE_ADMIN
+  CREATE_PERMISSION
+  UPDATE_PERMISSION
+  DELETE_PERMISSION
+  API_CALL
+}
+
+enum PermissionModule {
+  USERS
+  ORDERS
+  TRYON
+  PHOTOS
+  ADMINS
+  CONFIGS
+  ANNOUNCEMENTS
+  LOGS
+}
+
+enum PermissionAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String?  @unique
+  deviceId  String?  @unique
+  fingerprint String?
+  email     String?  @unique
+  nickname  String?
+  avatarUrl String?
+  
+  role      UserRole @default(USER)
+  status    UserStatus @default(ACTIVE)
+  
+  dailyTryOnCount Int      @default(0)
+  lastTryOnDate   DateTime?
+  isMember        Boolean  @default(false)
+  memberExpiresAt DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  sessions     Session[]
+  tryOnTasks   TryOnTask[]
+  tryOnRecords TryOnRecord[]
+  orders       Order[]
+  
+  @@index([phone])
+  @@index([deviceId])
+  @@index([fingerprint])
+  @@index([status])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model TryOnTask {
+  id        String     @id @default(cuid())
+  taskId    String     @unique
+  userId    String
+  status    TaskStatus @default(PENDING)
+  
+  personImageKey String
+  clothImageKey  String
+  clothingType   ClothingType @default(TOP)
+  
+  resultImageKey String?
+  errorMessage   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tryOnRecord  TryOnRecord?
+  
+  @@index([taskId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TryOnRecord {
+  id          String       @id @default(cuid())
+  userId      String
+  taskId      String?      @unique
+  
+  personImageKey  String
+  clothImageKey   String
+  resultImageKey  String?
+  clothingType    ClothingType @default(TOP)
+  
+  status      TaskStatus   @default(COMPLETED)
+  errorMessage String?
+  
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task     TryOnTask? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([taskId])
+  @@index([expiresAt])
+}
+
+model Order {
+  id            String       @id @default(cuid())
+  orderNo       String       @unique
+  userId        String
+  status        OrderStatus  @default(PENDING)
+  
+  amount        Decimal      @db.Decimal(10, 2)
+  currency      String       @default("CNY")
+  productType   String
+  
+  paymentMethod String?
+  paidAt        DateTime?
+  transactionId String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([orderNo])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String?  @unique
+  password  String
+  role      UserRole @default(ADMIN)
+  status    UserStatus @default(ACTIVE)
+  
+  lastLoginAt DateTime?
+  loginCount  Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  operationLogs OperationLog[]
+  permissions   AdminPermission[]
+  
+  @@index([username])
+  @@index([status])
+}
+
+model AdminPermission {
+  id        String           @id @default(cuid())
+  adminId   String
+  module    PermissionModule
+  actions   PermissionAction[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  
+  @@unique([adminId, module])
+  @@index([adminId])
+}
+
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String
+  description String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([key])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  isActive  Boolean  @default(true)
+  priority  Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([isActive])
+  @@index([priority])
+}
+
+model OperationLog {
+  id            String        @id @default(cuid())
+  adminId       String?
+  operationType OperationType
+  module        String?
+  entityId      String?
+  details       String?
+  beforeData    String?
+  afterData     String?
+  ipAddress     String?
+  userAgent     String?
+  
+  createdAt     DateTime @default(now())
+  
+  admin Admin? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  
+  @@index([adminId])
+  @@index([operationType])
+  @@index([module])
+  @@index([createdAt])
+}
+
+model ApiLog {
+  id          String   @id @default(cuid())
+  taskId      String?  // 关联的试衣任务ID
+  endpoint    String   // 调用的API端点
+  method      String   @default("POST")
+  
+  requestData   String?  // 请求参数（JSON）
+  responseData  String?  // 响应数据（JSON）
+  
+  clothingType String?  // 服装类型
+  category     String?  // 映射后的category
+  
+  statusCode    Int?     // HTTP状态码
+  duration      Int?     // 请求耗时（毫秒）
+  errorMessage  String?
+  
+  createdAt     DateTime @default(now())
+  
+  @@index([taskId])
+  @@index([createdAt])
+  @@index([clothingType])
+  @@index([statusCode])
+}
