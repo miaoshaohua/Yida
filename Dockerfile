@@ -19,11 +19,11 @@ RUN npx prisma generate
 # 构建 NestJS 应用
 RUN npm run build
 
-# 清理 devDependencies（可选，减小镜像大小）
-# RUN npm prune --production
+# 检查 dist 目录内容
+RUN ls -la dist/
 
 # 暴露端口
 EXPOSE 3000
 
 # 启动应用
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main.js"]
