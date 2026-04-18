@@ -7,8 +7,8 @@ WORKDIR /app
 # 复制后端 package.json 和 package-lock.json
 COPY backend/package*.json ./
 
-# 安装依赖
-RUN npm ci --only=production
+# 安装所有依赖（包括 devDependencies）
+RUN npm ci
 
 # 复制后端源代码
 COPY backend/ ./
@@ -18,6 +18,9 @@ RUN npx prisma generate
 
 # 构建 NestJS 应用
 RUN npm run build
+
+# 清理 devDependencies（可选，减小镜像大小）
+# RUN npm prune --production
 
 # 暴露端口
 EXPOSE 3000
