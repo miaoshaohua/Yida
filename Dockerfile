@@ -36,5 +36,5 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 # 暴露端口
 EXPOSE 3000
 
-# 启动应用
-CMD ["node", "dist/main.js"]
+# 启动应用 - 注意路径是 dist/src/main.js
+CMD ["node", "dist/src/main.js"]
