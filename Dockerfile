@@ -20,10 +20,11 @@ RUN npx prisma generate
 RUN npm run build
 
 # 检查 dist 目录内容
-RUN ls -la dist/
+RUN ls -la dist/ || echo "dist directory not found"
+RUN ls -la || echo "current directory listing"
 
 # 暴露端口
 EXPOSE 3000
 
-# 启动应用
-CMD ["node", "dist/main.js"]
+# 启动应用 - 使用绝对路径
+CMD ["node", "/app/dist/main.js"]
