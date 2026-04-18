@@ -1,6 +1,9 @@
 # 构建阶段
 FROM node:18-alpine AS builder
 
+# 安装 OpenSSL 和其他依赖
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
 # 复制后端 package.json 和 package-lock.json
@@ -20,6 +23,9 @@ RUN npm run build
 
 # 生产阶段
 FROM node:18-alpine
+
+# 安装 OpenSSL
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
