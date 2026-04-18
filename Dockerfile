@@ -1,7 +1,6 @@
-# 使用 Node.js 官方镜像
-FROM node:18-alpine
+# 构建阶段
+FROM node:18-alpine AS builder
 
-# 设置工作目录
 WORKDIR /app
 
 # 复制后端 package.json 和 package-lock.json
@@ -19,12 +18,23 @@ RUN npx prisma generate
 # 构建 NestJS 应用
 RUN npm run build
 
-# 检查 dist 目录内容
-RUN ls -la dist/ || echo "dist directory not found"
-RUN ls -la || echo "current directory listing"
+# 生产阶段
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 复制 package.json
+COPY backend/package*.json ./
+
+# 只安装生产依赖
+RUN npm ci --only=production
+
+# 从构建阶段复制编译后的代码
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 # 暴露端口
 EXPOSE 3000
 
-# 启动应用 - 使用绝对路径
-CMD ["node", "/app/dist/main.js"]
+# 启动应用
+CMD ["node", "dist/main.js"]
