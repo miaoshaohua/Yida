@@ -62,15 +62,30 @@ export class AdminController {
   @ApiQuery({ name: 'page', required: false })
   @ApiQuery({ name: 'pageSize', required: false })
   @ApiQuery({ name: 'search', required: false })
+  @ApiQuery({ name: 'dailyTryOnCount', required: false })
+  @ApiQuery({ name: 'minTotalTryOn', required: false })
+  @ApiQuery({ name: 'maxTotalTryOn', required: false })
+  @ApiQuery({ name: 'startDate', required: false })
+  @ApiQuery({ name: 'endDate', required: false })
   async getUsers(
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
     @Query('search') search?: string,
+    @Query('dailyTryOnCount') dailyTryOnCount?: string,
+    @Query('minTotalTryOn') minTotalTryOn?: string,
+    @Query('maxTotalTryOn') maxTotalTryOn?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
   ) {
     return this.adminService.getUsers(
       page ? parseInt(page) : 1,
       pageSize ? parseInt(pageSize) : 20,
       search,
+      dailyTryOnCount ? parseInt(dailyTryOnCount) : undefined,
+      minTotalTryOn ? parseInt(minTotalTryOn) : undefined,
+      maxTotalTryOn ? parseInt(maxTotalTryOn) : undefined,
+      startDate,
+      endDate,
     );
   }
 

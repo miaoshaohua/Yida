@@ -15,13 +15,30 @@ export const AdminUsersPage: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editForm, setEditForm] = useState({ nickname: '', phone: '', email: '', status: 'ACTIVE' });
 
+  const [dailyTryOnCount, setDailyTryOnCount] = useState<number | undefined>(undefined);
+  const [minTotalTryOn, setMinTotalTryOn] = useState<number | undefined>(undefined);
+  const [maxTotalTryOn, setMaxTotalTryOn] = useState<number | undefined>(undefined);
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [showFilters, setShowFilters] = useState(false);
+
   const pageSize = 20;
 
-  const fetchUsers = async (currentPage: number = 1, searchQuery: string = '') => {
+  const fetchUsers = async (
+    currentPage: number = 1,
+    searchQuery: string = '',
+    filters?: {
+      dailyTryOnCount?: number;
+      minTotalTryOn?: number;
+      maxTotalTryOn?: number;
+      startDate?: string;
+      endDate?: string;
+    }
+  ) => {
     try {
       setLoading(true);
       setError('');
-      const data = await adminUsersAPI.getUsers(currentPage, pageSize, searchQuery);
+      const data = await adminUsersAPI.getUsers(currentPage, pageSize, searchQuery, filters);
       setUsers(data.users);
       setTotal(data.total);
       setPage(currentPage);
@@ -39,7 +56,21 @@ export const AdminUsersPage: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchUsers(1, searchInput);
+    fetchUsers(1, searchInput, { dailyTryOnCount, minTotalTryOn, maxTotalTryOn, startDate, endDate });
+  };
+
+  const applyFilters = () => {
+    fetchUsers(1, searchInput, { dailyTryOnCount, minTotalTryOn, maxTotalTryOn, startDate, endDate });
+  };
+
+  const clearFilters = () => {
+    setDailyTryOnCount(undefined);
+    setMinTotalTryOn(undefined);
+    setMaxTotalTryOn(undefined);
+    setStartDate('');
+    setEndDate('');
+    setSearchInput('');
+    fetchUsers(1, '');
   };
 
   const handleEdit = (user: User) => {
@@ -142,6 +173,13 @@ export const AdminUsersPage: React.FC = () => {
                 🗑️ 批量删除 ({selectedUserIds.size})
               </button>
             )}
+            <button
+              type="button"
+              style={styles.filterToggleButton}
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              🔍 筛选
+            </button>
             <form style={styles.searchForm} onSubmit={handleSearch}>
               <input
                 type="text"
@@ -153,18 +191,94 @@ export const AdminUsersPage: React.FC = () => {
               <button type="submit" style={styles.searchButton}>
                 🔍 搜索
               </button>
-              {search && (
+              {(search || dailyTryOnCount !== undefined || minTotalTryOn !== undefined || maxTotalTryOn !== undefined || startDate || endDate) && (
                 <button
                   type="button"
                   style={styles.clearButton}
-                  onClick={() => fetchUsers(1, '')}
+                  onClick={clearFilters}
                 >
-                  清除
+                  清除全部
                 </button>
               )}
             </form>
           </div>
         </div>
+
+        {showFilters && (
+          <div style={styles.filterPanel}>
+            <div style={styles.filterRow}>
+              <div style={styles.filterGroup}>
+                <label style={styles.filterLabel}>今日试衣次数 &gt;=</label>
+                <input
+                  type="number"
+                  style={styles.filterInput}
+                  value={dailyTryOnCount ?? ''}
+                  onChange={(e) => setDailyTryOnCount(e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder="最小值"
+                  min={0}
+                />
+              </div>
+              <div style={styles.filterGroup}>
+                <label style={styles.filterLabel}>累计试衣次数 &gt;=</label>
+                <input
+                  type="number"
+                  style={styles.filterInput}
+                  value={minTotalTryOn ?? ''}
+                  onChange={(e) => setMinTotalTryOn(e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder="最小值"
+                  min={0}
+                />
+              </div>
+              <div style={styles.filterGroup}>
+                <label style={styles.filterLabel}>累计试衣次数 &lt;=</label>
+                <input
+                  type="number"
+                  style={styles.filterInput}
+                  value={maxTotalTryOn ?? ''}
+                  onChange={(e) => setMaxTotalTryOn(e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder="最大值"
+                  min={0}
+                />
+              </div>
+            </div>
+            <div style={styles.filterRow}>
+              <div style={styles.filterGroup}>
+                <label style={styles.filterLabel}>注册开始日期</label>
+                <input
+                  type="date"
+                  style={styles.filterInput}
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+              <div style={styles.filterGroup}>
+                <label style={styles.filterLabel}>注册结束日期</label>
+                <input
+                  type="date"
+                  style={styles.filterInput}
+                  value={endDate}
+                  onChange={(e) => {
+                    if (!startDate || e.target.value >= startDate) {
+                      setEndDate(e.target.value);
+                    } else {
+                      setEndDate(startDate);
+                    }
+                  }}
+                  min={startDate}
+                />
+              </div>
+              <div style={styles.filterGroup}>
+                <button
+                  type="button"
+                  style={styles.applyFilterButton}
+                  onClick={applyFilters}
+                >
+                  🔍 应用筛选
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div style={styles.error}>
@@ -385,6 +499,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: 'pointer',
     fontWeight: 500,
   },
+  filterToggleButton: {
+    padding: '8px 16px',
+    border: '1px solid #E6004C',
+    borderRadius: '6px',
+    background: 'white',
+    color: '#E6004C',
+    fontSize: '14px',
+    cursor: 'pointer',
+    fontWeight: 500,
+  },
   searchInput: {
     padding: '8px 16px',
     border: '1px solid #d9d9d9',
@@ -508,15 +632,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '13px',
     cursor: 'pointer',
   },
-  actionButtonSuccess: {
-    padding: '6px 12px',
-    border: 'none',
-    borderRadius: '4px',
-    background: '#f6ffed',
-    color: '#52c41a',
-    fontSize: '13px',
-    cursor: 'pointer',
-  },
   actionButton: {
     padding: '6px 12px',
     border: 'none',
@@ -562,6 +677,50 @@ const styles: { [key: string]: React.CSSProperties } = {
   paginationInfo: {
     fontSize: '14px',
     color: '#666',
+  },
+  filterPanel: {
+    background: 'white',
+    borderRadius: '12px',
+    padding: '20px',
+    marginBottom: '20px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+  },
+  filterRow: {
+    display: 'flex',
+    gap: '16px',
+    marginBottom: '16px',
+    flexWrap: 'wrap',
+  },
+  filterGroup: {
+    flex: '1',
+    minWidth: '180px',
+  },
+  filterLabel: {
+    display: 'block',
+    fontSize: '13px',
+    fontWeight: 500,
+    color: '#666',
+    marginBottom: '6px',
+  },
+  filterInput: {
+    width: '100%',
+    padding: '8px 12px',
+    border: '1px solid #d9d9d9',
+    borderRadius: '6px',
+    fontSize: '14px',
+    boxSizing: 'border-box',
+  },
+  applyFilterButton: {
+    padding: '8px 20px',
+    border: 'none',
+    borderRadius: '6px',
+    background: 'linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%)',
+    color: 'white',
+    fontSize: '14px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    height: '36px',
+    marginTop: '20px',
   },
   modalOverlay: {
     position: 'fixed',

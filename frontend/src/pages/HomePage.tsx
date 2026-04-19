@@ -13,6 +13,7 @@ const HomePage: React.FC = () => {
   const [category, setCategory] = useState<'tops' | 'bottoms' | 'onepiece' | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const handlePersonImageSelect = (file: File) => {
     setPersonFile(file);
@@ -37,8 +38,7 @@ const HomePage: React.FC = () => {
   };
 
   const uploadImage = async (file: File): Promise<string> => {
-    const { fileKey } = await storageAPI.getPresignedUrl(file.name);
-    await storageAPI.uploadFile(fileKey, file);
+    const fileKey = await storageAPI.uploadViaBackend(file);
     return fileKey;
   };
 
@@ -74,7 +74,13 @@ const HomePage: React.FC = () => {
 
       navigate(`/loading/${task.taskId}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || '试衣请求失败，请重试');
+      const message = err.response?.data?.message || '试衣请求失败，请重试';
+      if (message.includes('今日试衣次数已用完')) {
+        setError(message);
+        setShowLoginPrompt(true);
+      } else {
+        setError(message);
+      }
       setLoading(false);
     }
   };
@@ -94,6 +100,14 @@ const HomePage: React.FC = () => {
           {error && (
             <div style={styles.error}>
               {error}
+              {showLoginPrompt && (
+                <button 
+                  style={styles.loginButton}
+                  onClick={() => navigate('/login')}
+                >
+                  📱 手机登录，获取更多次数
+                </button>
+              )}
             </div>
           )}
 
@@ -348,6 +362,21 @@ const styles: Record<string, any> = {
     color: '#ff4d4f',
     marginBottom: '24px',
     textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    alignItems: 'center',
+  },
+  loginButton: {
+    background: 'linear-gradient(135deg, #E6004C 0%, #FF2A6D 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '10px 20px',
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    marginTop: '4px',
   },
   uploadZone: {
     border: '2px dashed #E6004C',

@@ -135,7 +135,7 @@ export class AuthService {
       dailyTryOnCount = 0;
       await this.prisma.user.update({
         where: { id: user.id },
-        data: { dailyTryOnCount: 0 },
+        data: { dailyTryOnCount: 0, lastTryOnDate: new Date() },
       });
     }
 

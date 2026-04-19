@@ -15,7 +15,7 @@ export class StorageService {
   private readonly uploadDir: string;
 
   constructor() {
-    this.useLocalStorage = process.env.STORAGE_MODE === 'local';
+    this.useLocalStorage = process.env.STORAGE_MODE === 'local' || !process.env.R2_ACCOUNT_ID;
     this.presignedUrlExpiresIn = parseInt(process.env.R2_PRESIGNED_URL_EXPIRES_IN || '1800');
     this.uploadDir = path.join(process.cwd(), 'uploads');
 

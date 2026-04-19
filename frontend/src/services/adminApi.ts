@@ -170,9 +170,20 @@ export const adminDashboardAPI = {
 };
 
 export const adminUsersAPI = {
-  getUsers: async (page: number = 1, pageSize: number = 20, search?: string): Promise<{ users: User[], total: number }> => {
+  getUsers: async (
+    page: number = 1,
+    pageSize: number = 20,
+    search?: string,
+    filters?: {
+      dailyTryOnCount?: number;
+      minTotalTryOn?: number;
+      maxTotalTryOn?: number;
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<{ users: User[], total: number }> => {
     const response = await adminApi.get<{ users: User[], total: number }>('/users', {
-      params: { page, pageSize, search },
+      params: { page, pageSize, search, ...filters },
     });
     return response.data;
   },

@@ -91,15 +91,52 @@ export interface PresignedUrlResponse {
 }
 
 export const storageAPI = {
+  // 通过后端代理上传图片（推荐，避免 R2 签名问题）
+  uploadViaBackend: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<{ success: boolean; fileKey: string }>(
+      '/storage/upload-file',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data.fileKey;
+  },
+
+  // 保留原有方法用于兼容
   getPresignedUrl: async (filename: string): Promise<PresignedUrlResponse> => {
     const response = await api.post<PresignedUrlResponse>('/storage/presigned-url', { filename });
     return response.data;
   },
 
-  uploadFile: async (fileKey: string, file: File): Promise<void> => {
-    const formData = new FormData();
-    formData.append('file', file);
-    await api.post(`/storage/upload-direct?key=${encodeURIComponent(fileKey)}`, formData);
+  uploadFile: async (uploadUrl: string, file: File, fileKey: string): Promise<void> => {
+    if (uploadUrl.startsWith('http')) {
+      // R2 模式：直接上传到预签名 URL（使用 XMLHttpRequest 避免 CORS 签名问题）
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl, true);
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+          } else {
+            reject(new Error(`R2 上传失败: ${xhr.status} ${xhr.statusText}`));
+          }
+        };
+        xhr.onerror = function () {
+          reject(new Error('R2 上传失败: 网络错误'));
+        };
+        xhr.send(file);
+      });
+    } else {
+      // 本地模式：通过后端上传
+      const formData = new FormData();
+      formData.append('file', file);
+      await api.post(`${uploadUrl}?key=${encodeURIComponent(fileKey)}`, formData);
+    }
   },
 };
 

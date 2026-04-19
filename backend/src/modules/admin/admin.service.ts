@@ -42,14 +42,44 @@ export class AdminService {
     };
   }
 
-  async getUsers(page: number, pageSize: number, search?: string) {
+  async getUsers(
+    page: number,
+    pageSize: number,
+    search?: string,
+    dailyTryOnCount?: number,
+    minTotalTryOn?: number,
+    maxTotalTryOn?: number,
+    startDate?: string,
+    endDate?: string,
+  ) {
     const skip = (page - 1) * pageSize;
-    const where = search ? {
-      OR: [
-        { phone: { contains: search } },
-        { nickname: { contains: search } },
-      ],
-    } : {};
+
+    const whereConditions: any[] = [];
+
+    if (search) {
+      whereConditions.push({
+        OR: [
+          { phone: { contains: search } },
+          { nickname: { contains: search } },
+        ],
+      });
+    }
+
+    if (dailyTryOnCount !== undefined) {
+      whereConditions.push({ dailyTryOnCount: { gte: dailyTryOnCount } });
+    }
+
+    if (startDate) {
+      whereConditions.push({ createdAt: { gte: new Date(startDate) } });
+    }
+
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      whereConditions.push({ createdAt: { lte: end } });
+    }
+
+    const where = whereConditions.length > 0 ? { AND: whereConditions } : {};
 
     const [users, total] = await Promise.all([
       this.prisma.user.findMany({
@@ -66,14 +96,24 @@ export class AdminService {
       this.prisma.user.count({ where }),
     ]);
 
-    const formattedUsers = users.map((user: any) => ({
-      ...user,
-      totalTryOnCount: user._count?.tryOnRecords || 0,
-    }));
+    const formattedUsers = users
+      .map((user: any) => ({
+        ...user,
+        totalTryOnCount: user._count?.tryOnRecords || 0,
+      }))
+      .filter((user: any) => {
+        if (minTotalTryOn !== undefined && user.totalTryOnCount < minTotalTryOn) {
+          return false;
+        }
+        if (maxTotalTryOn !== undefined && user.totalTryOnCount > maxTotalTryOn) {
+          return false;
+        }
+        return true;
+      });
 
     return {
       users: formattedUsers,
-      total,
+      total: total,
     };
   }
 
