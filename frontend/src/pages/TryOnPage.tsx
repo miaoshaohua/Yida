@@ -45,8 +45,8 @@ export const TryOnPage: React.FC = () => {
   };
 
   const uploadImage = async (file: File): Promise<string> => {
-    const { fileKey } = await storageAPI.getPresignedUrl(file.name);
-    await storageAPI.uploadFile(fileKey, file);
+    const { uploadUrl, fileKey } = await storageAPI.getPresignedUrl(file.name);
+    await storageAPI.uploadFile(uploadUrl, file, fileKey);
     return fileKey;
   };
 
