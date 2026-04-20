@@ -1,0 +1,17 @@
+node_modules
+dist
+.git
+.gitignore
+*.md
+.env
+.env.local
+.env.*.local
+.vscode
+.idea
+.trae
+Dockerfile
+docker-compose*.yml
+railway.json
+docs
+documents
+.github

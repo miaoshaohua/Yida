@@ -8,6 +8,8 @@ AI虚拟试衣间全栈项目，用户上传人物照片+服装照片，调用FA
 - 后端：NestJS + Prisma + SQLite/PostgreSQL + Redis(Bull Queue) + Swagger（端口3000）
 - 存储：Cloudflare R2（S3兼容）+ 本地文件系统降级
 - 认证：双体系 - 用户端（游客/短信JWT）+ 管理端（账号密码JWT+权限）
+- 权限：细粒度模块权限，超级管理员授权，普通管理员按权限访问
+- 日志：操作审计系统，自动记录增删改查操作，包含前后数据对比
 
 ## 关键架构规则
 
@@ -23,6 +25,7 @@ AI虚拟试衣间全栈项目，用户上传人物照片+服装照片，调用FA
 - 生产环境使用PostgreSQL（prisma/schema.postgresql.prisma）
 - 默认schema：prisma/schema.prisma（当前为SQLite兼容版）
 - 迁移命令：`npx prisma migrate dev` / `npx prisma generate`
+- 关键表：Admin（管理员）、AdminPermission（权限配置）、OperationLog（操作日志）
 
 ### 认证体系
 - 用户端JWT：`Authorization: Bearer <token>`，通过JwtAuthGuard保护
@@ -30,6 +33,22 @@ AI虚拟试衣间全栈项目，用户上传人物照片+服装照片，调用FA
 - 游客登录：deviceId或fingerprint，返回JWT token
 - 短信登录：手机号+验证码，演示模式验证码为123456
 - 获取当前用户：`@CurrentUser()`装饰器，需JwtAuthGuard
+- 获取当前管理员：`@CurrentAdmin()`装饰器，需AdminJwtAuthGuard
+
+### 权限体系
+- **权限模块枚举**：PermissionModule（USERS, ORDERS, TRYON, PHOTOS, ADMINS, LOGS, CONFIG）
+- **权限动作枚举**：PermissionAction（READ, CREATE, UPDATE, DELETE）
+- **权限装饰器**：`@Permissions(module, action)`
+- **权限守卫**：PermissionGuard，检查AdminPermission表中配置
+- **超级管理员**：自动拥有所有模块的所有权限，无需检查
+- **普通管理员**：需在AdminAccountsPage配置权限，按配置访问
+
+### 操作日志体系
+- **日志服务**：OperationLoggerService，提供`log()`和`logWithDiff()`方法
+- **自动记录**：在Service层调用，自动记录管理员ID、操作类型、IP地址、User-Agent
+- **Diff对比**：`formatDiff()`方法，JSON序列化前后数据，便于对比
+- **日志查询**：GET /api/admin/operation-logs，支持按模块、操作类型、日期筛选
+- **日志详情**：GET /api/admin/operation-logs/:id，展示完整beforeData/afterData
 
 ## 踩坑规则（必须遵守）
 
@@ -79,21 +98,33 @@ AI虚拟试衣间全栈项目，用户上传人物照片+服装照片，调用FA
 
 ### 7. 存储上传必须走后端代理（R2签名问题）
 - R2预签名URL在前端直传时会因浏览器额外添加的Header（Accept、Origin、Referer等）导致AWS签名不匹配（SignatureDoesNotMatch）
-- 解决方案：使用后端 `/api/storage/upload-file` 接口，通过后端代理上传到R2
-- 前端调用：`storageAPI.uploadViaBackend(file)`
+- 解决方案：使用后端 `/api/storage/upload-direct` 接口，通过后端代理上传到R2或本地存储
+- 前端调用：`storageAPI.uploadDirect(file, fileKey)`
 - 不要使用前端 fetch PUT 直传预签名URL
 
-### 8. NestJS编译输出路径是dist/src/
+### 8. 管理端新增权限规则
+- 所有管理端CRUD操作都要添加 `@UseGuards(AdminJwtAuthGuard, PermissionGuard)`
+- 使用 `@Permissions(PermissionModule.USERS, PermissionAction.CREATE)` 装饰器指定权限
+- 超级管理员（role: SUPER_ADMIN）自动通过所有权限检查
+- 普通管理员需在AdminPermission表配置权限后才能访问
+
+### 9. 操作日志记录规则
+- 所有增删改操作都要调用 `operationLoggerService.logWithDiff()` 记录
+- 传入操作类型（如CREATE_USER）、模块、entityId、操作前数据、操作后数据
+- 从Request中获取管理员ID、IP地址、User-Agent
+- 查询操作不需要记录日志
+
+### 10. NestJS编译输出路径是dist/src/
 - `nest build` 后的入口文件路径是 `dist/src/main.js`，不是 `dist/main.js`
 - Dockerfile 或任何启动命令必须使用：`node dist/src/main.js`
 - nest-cli.json 配置：`"sourceRoot": "src"`
 
-### 9. 每日试衣次数跨天重置
+### 11. 每日试衣次数跨天重置
 - 后端 `auth.service.ts` 的 `getCurrentUser` 会检测 `lastTryOnDate !== today`，自动重置 `dailyTryOnCount = 0` 并更新 `lastTryOnDate`
 - 前端 `AuthContext.tsx` 在加载时比对 `_lastCheckDate`，如果跨天则自动刷新用户信息
 - 后端 `tryon.service.ts` 的 `checkTryOnQuota` 也会在试衣前检测并重置
 
-### 10. 游客次数用完引导登录
+### 12. 游客次数用完引导登录
 - 游客每日免费3次试衣，用完后前端显示错误提示 + "手机登录，获取更多次数" 按钮
 - 手机注册/登录的用户也有每日3次免费试衣，独立计数
 - 实现位置：`HomePage.tsx` 的 catch 块检测"今日试衣次数已用完"
@@ -160,12 +191,19 @@ npm run dev          # Vite开发服务器
 | 前端API | frontend/src/services/api.ts |
 | 前端管理API | frontend/src/services/adminApi.ts |
 | 前端认证 | frontend/src/contexts/AuthContext.tsx |
+| 前端管理认证 | frontend/src/contexts/AdminAuthContext.tsx |
+| 前端管理页面 | frontend/src/pages/admin/ |
+| 前端日志页面 | frontend/src/pages/admin/AdminLogsPage.tsx |
+| 前端权限弹窗 | frontend/src/components/admin/PermissionModal.tsx |
 | 后端入口 | backend/src/main.ts |
 | 后端模块 | backend/src/app.module.ts |
 | 后端认证 | backend/src/modules/auth/ |
 | 后端存储 | backend/src/modules/storage/ |
 | 后端试衣 | backend/src/modules/tryon/ |
 | 后端管理 | backend/src/modules/admin/ |
+| 权限守卫 | backend/src/common/guards/permission.guard.ts |
+| 权限装饰器 | backend/src/common/decorators/permissions.decorator.ts |
+| 操作日志服务 | backend/src/modules/admin/services/operation-logger.service.ts |
 | 数据库Schema | backend/prisma/schema.prisma |
 | 环境变量 | backend/.env |
 | 页面原型 | documents/页面原型设计.html |

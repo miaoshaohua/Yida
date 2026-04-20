@@ -1,44 +1,10 @@
 version: '3.8'
 
+# 使用现有的MySQL和Redis服务
+# MySQL: 42.194.162.239:13306 (root/123456)
+# Redis: 42.194.162.239:16379
+
 services:
-  postgres:
-    image: bitnami/postgresql:latest
-    container_name: yida-postgres
-    environment:
-      POSTGRESQL_USERNAME: yida
-      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD:-yida123}
-      POSTGRESQL_DATABASE: yida
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/bitnami/postgresql
-    networks:
-      - yida-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U yida -d yida"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  redis:
-    image: bitnami/redis:latest
-    container_name: yida-redis
-    environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/bitnami/redis/data
-    networks:
-      - yida-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
   backend:
     build:
       context: .
@@ -47,9 +13,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://yida:${POSTGRES_PASSWORD:-yida123}@postgres:5432/yida?schema=public
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
+      # 使用现有的MySQL
+      DATABASE_URL: mysql://root:123456@42.194.162.239:13306/yida?schema=public
+      # 使用现有的Redis
+      REDIS_HOST: 42.194.162.239
+      REDIS_PORT: 16379
       REDIS_PASSWORD: ""
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: 7d
@@ -70,11 +38,7 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     ports:
       - "3000:3000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    # 移除 depends_on，因为使用外部服务
     networks:
       - yida-network
     restart: unless-stopped
@@ -93,10 +57,6 @@ services:
     networks:
       - yida-network
     restart: unless-stopped
-
-volumes:
-  postgres_data:
-  redis_data:
 
 networks:
   yida-network:

@@ -1,0 +1,35 @@
+version: '3.8'
+
+# 使用非标准端口,避免与现有服务冲突
+# PostgreSQL: 5433 (原5432被占用)
+# Redis: 6380 (原6379被占用)
+
+services:
+  postgres:
+    ports:
+      - "5433:5432"  # 映射到主机的5433端口
+    networks:
+      - yida-network
+
+  redis:
+    ports:
+      - "6380:6379"  # 映射到主机的6380端口
+    networks:
+      - yida-network
+
+  backend:
+    environment:
+      # 使用容器内部网络连接,端口仍然是5432和6379
+      DATABASE_URL: postgresql://yida:${POSTGRES_PASSWORD:-yida123}@postgres:5432/yida?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    networks:
+      - yida-network
+
+  frontend:
+    networks:
+      - yida-network
+
+networks:
+  yida-network:
+    driver: bridge
