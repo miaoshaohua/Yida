@@ -39,6 +39,9 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
+# 创建 uploads 目录（本地存储模式）
+RUN mkdir -p /app/uploads
+
 # 暴露端口
 EXPOSE 3000
 

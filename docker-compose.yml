@@ -70,6 +70,8 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     ports:
       - "3000:3000"
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -97,6 +99,7 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  uploads_data:
 
 networks:
   yida-network:
