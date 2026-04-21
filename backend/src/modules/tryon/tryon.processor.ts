@@ -129,9 +129,10 @@ export class TryOnProcessor {
         `${apiUrl}/tryon`,
         requestBody,
         {
-          timeout: 1200000, // 20分钟超时
+          timeout: 1200000,
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.FASHN_API_KEY}`,
           },
         }
       );
