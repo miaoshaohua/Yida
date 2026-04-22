@@ -6,7 +6,12 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    // 增加请求体大小限制，支持大图片上传（iPhone 照片通常 5-10MB）
+    bodyParser: {
+      limit: '50mb',
+    },
+  });
   
   // 全局路由前缀
   app.setGlobalPrefix('api');
