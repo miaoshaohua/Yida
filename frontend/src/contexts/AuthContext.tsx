@@ -22,21 +22,47 @@ const getDeviceId = () => {
   return deviceId;
 };
 
-// 生成简单的设备指纹
-const generateFingerprint = async () => {
+// 生成简单的设备指纹（兼容移动端）
+const generateFingerprint = async (): Promise<string> => {
   const components = [
     navigator.userAgent,
+    `${screen.width}x${screen.height}`,
     navigator.language,
-    screen.colorDepth,
-    screen.width + 'x' + screen.height,
-    new Date().getTimezoneOffset(),
-  ];
-  const str = components.join('|');
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    navigator.hardwareConcurrency?.toString() || '0',
+  ].join('|');
+
+  let hashValue: string;
+  
+  // 检查 crypto.subtle 是否可用（某些移动端浏览器不支持）
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(components);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      hashValue = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+      // 如果 crypto.subtle 调用失败，使用备用方案
+      hashValue = simpleHash(components);
+    }
+  } else {
+    // 使用备用哈希算法
+    hashValue = simpleHash(components);
+  }
+  
+  return hashValue.substring(0, 32);
+};
+
+// 简单的哈希算法（兼容所有环境）
+const simpleHash = (str: string): string => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(16).padStart(8, '0').repeat(4);
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
