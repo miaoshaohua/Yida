@@ -38,8 +38,13 @@ const HomePage: React.FC = () => {
   };
 
   const uploadImage = async (file: File): Promise<string> => {
-    const fileKey = await storageAPI.uploadViaBackend(file);
-    return fileKey;
+    try {
+      const fileKey = await storageAPI.uploadViaBackend(file);
+      return fileKey;
+    } catch (err: any) {
+      console.error('图片上传失败:', err);
+      throw new Error('图片上传失败: ' + (err.message || '未知错误'));
+    }
   };
 
   const handleStartTryOn = async () => {
@@ -74,7 +79,19 @@ const HomePage: React.FC = () => {
 
       navigate(`/loading/${task.taskId}`);
     } catch (err: any) {
-      const message = err.response?.data?.message || '试衣请求失败，请重试';
+      // 详细错误日志，便于调试移动端问题
+      console.error('试衣失败详细错误:', err);
+      console.error('错误类型:', typeof err);
+      console.error('错误消息:', err.message);
+      console.error('错误响应:', err.response);
+      
+      let message = '试衣请求失败，请重试';
+      if (err.response?.data?.message) {
+        message = err.response.data.message;
+      } else if (err.message) {
+        message = err.message;
+      }
+      
       if (message.includes('今日试衣次数已用完')) {
         setError(message);
         setShowLoginPrompt(true);
