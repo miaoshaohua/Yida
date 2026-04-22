@@ -99,9 +99,8 @@ export const storageAPI = {
       '/storage/upload-file',
       formData,
       {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        // 注意：不要手动设置 Content-Type，让浏览器自动设置（包含 boundary）
+        // 手动设置会导致 iOS 和某些移动端浏览器上传失败
       }
     );
     return response.data.fileKey;
