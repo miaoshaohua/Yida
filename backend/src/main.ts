@@ -26,7 +26,8 @@ async function bootstrap() {
   });
   
   // 静态文件服务 - 提供本地存储的上传文件访问
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  // 注意：与 storage.service.ts 中的 uploadDir 保持一致
+  app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads',
   });
   
